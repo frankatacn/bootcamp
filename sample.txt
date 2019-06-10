@@ -1,5 +1,0 @@
-total 8040
--rw-rw-r-- 1 unixrox unixrox      29 Jun 10 02:49 date.txt
--rw-rw-r-- 1 unixrox unixrox      92 Jun 10 02:41 git-config.txt
--rw-rw-r-- 1 unixrox unixrox 8222370 Jun 10 02:41 openvpn-connect-2.5.0.100.msi
--rw-rw-r-- 1 unixrox unixrox       0 Jun 10 03:08 sample.txt
