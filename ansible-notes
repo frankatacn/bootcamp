@@ -1,0 +1,185 @@
+======================
+Ansible installation
+======================
+
+# this version of Amazon Linux
+$ cat /etc/*system*
+<some text>
+Amazon Linux AMI release 2018.03
+<some text>
+
+# python is installed by default, this means pip is also installed. To install ansible, run this command
+$ sudo pip install ansible
+<some installation messages>
+$ ansible --version
+ansible 2.8.2
+  config file = None
+  configured module search path = [u'/home/ec2-user/.ansible/plugins/modules', u'/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/local/lib/python2.7/site-packages/ansible
+  executable location = /usr/local/bin/ansible
+  python version = 2.7.16 (default, Jun 18 2019, 18:29:12) [GCC 4.8.5 20150623 (Red Hat 4.8.5-28)]
+
+# Check ansible documentation for additional libraries to be installed
+
+======================
+Example codes
+======================
+
+[unixrox@ip-10-0-0-195 playbook]$ pwd
+/home/unixrox/playbook
+[unixrox@ip-10-0-0-195 playbook]$ ll -R
+.:
+total 28
+-rw-rw-r-- 1 unixrox unixrox  146 Jul  9 06:47 anotherplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   68 Jul  9 07:42 appplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   57 Jul  9 05:46 hosts
+-rw-rw-r-- 1 unixrox unixrox  234 Jul  9 06:47 myplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   70 Jul  9 06:57 newplaybook.yml
+drwxrwxr-x 5 unixrox unixrox 4096 Jul  9 07:31 roles
+
+./roles:
+total 12
+drwxrwxr-x 3 unixrox unixrox 4096 Jul  9 07:31 app_install
+drwxrwxr-x 4 unixrox unixrox 4096 Jul  9 04:05 create_file
+drwxrwxr-x 4 unixrox unixrox 4096 Jul  9 04:05 create_folder
+
+./roles/app_install:
+total 4
+drwxrwxr-x 2 unixrox unixrox 4096 Jul  9 07:38 tasks
+
+./roles/app_install/tasks:
+total 4
+-rw-rw-r-- 1 unixrox unixrox 282 Jul  9 07:38 main.yml
+
+./roles/create_file:
+total 8
+drwxrwxr-x 2 unixrox unixrox 4096 Jul  9 04:05 defaults
+drwxrwxr-x 2 unixrox unixrox 4096 Jul  9 06:59 tasks
+
+./roles/create_file/defaults:
+total 0
+
+./roles/create_file/tasks:
+total 4
+-rw-rw-r-- 1 unixrox unixrox 124 Jul  9 06:59 main.yml
+
+./roles/create_folder:
+total 8
+drwxrwxr-x 2 unixrox unixrox 4096 Jul  9 04:05 defaults
+drwxrwxr-x 2 unixrox unixrox 4096 Jul  9 06:54 tasks
+
+./roles/create_folder/defaults:
+total 0
+
+./roles/create_folder/tasks:
+total 4
+-rw-rw-r-- 1 unixrox unixrox 192 Jul  9 06:54 main.yml
+[unixrox@ip-10-0-0-195 playbook]$ pwd
+/home/unixrox/playbook
+[unixrox@ip-10-0-0-195 playbook]$ ll
+total 28
+-rw-rw-r-- 1 unixrox unixrox  146 Jul  9 06:47 anotherplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   31 Jul  9 06:18 ansible.cfg
+-rw-rw-r-- 1 unixrox unixrox   68 Jul  9 07:42 appplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   57 Jul  9 05:46 hosts
+-rw-rw-r-- 1 unixrox unixrox  234 Jul  9 06:47 myplaybook.yml
+-rw-rw-r-- 1 unixrox unixrox   70 Jul  9 06:57 newplaybook.yml
+drwxrwxr-x 5 unixrox unixrox 4096 Jul  9 07:31 roles
+[unixrox@ip-10-0-0-195 playbook]$ cat hosts
+[local-machine]
+127.0.0.1
+
+[remote-machine]
+18.144.41.40
+[unixrox@ip-10-0-0-195 playbook]$ cat myplaybook.yml
+---
+- hosts: local-machine
+  tasks:
+  - name: Create folder using File Module
+    file:
+      state: directory
+      path: "~/filemodulefolder"
+
+  - name: Create folder using Shell Module
+    shell: "mkdir -p ~/shellmodulefolder"
+
+[unixrox@ip-10-0-0-195 playbook]$ cat anotherplaybook.yml
+---
+- hosts: local-machine
+  become: true
+  tasks:
+  - name: Create file
+    file:
+      state: touch
+      path: /tmp/tempfile
+      mode: 0600
+[unixrox@ip-10-0-0-195 playbook]$ cat newplaybook.yml
+---
+- hosts: local-machine
+  roles:
+  - create_folder
+  - create_file
+[unixrox@ip-10-0-0-195 playbook]$ cat appplaybook.yml
+---
+- hosts: remote-machine
+  become: true
+  roles:
+  - app_install
+[unixrox@ip-10-0-0-195 playbook]$ cat roles/create_file/tasks/main.yml
+- name: Create file
+  file:
+    state: touch
+    path: /tmp/tempfile3
+    owner: unixrox
+    group: unixrox
+    mode: 0600
+[unixrox@ip-10-0-0-195 playbook]$ cat roles/create_folder/tasks/main.yml
+---
+- name: Create folder using File Module
+  file:
+    state: directory
+    path: "~/filemodulefolder3"
+
+- name: Create folder using Shell Module
+  shell: "mkdir -p ~/shellmodulefolder3"
+
+[unixrox@ip-10-0-0-195 playbook]$ cat roles/app_install/tasks/main.yml
+- name: update or run patch
+  yum:
+    name: '*'
+    state: latest
+
+- name: install docker and git
+  yum:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - git
+    - docker
+
+- name: start docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+[unixrox@ip-10-0-0-195 playbook]$ pwd
+/home/unixrox/playbook
+[unixrox@ip-10-0-0-195 playbook]$ ansible-playbook -i ./hosts anotherplaybook.yml                                                         [DEPRECATION WARNING]: The TRANSFORM_INVALID_GROUP_CHARS settings is set to allow bad characters in group names by default, this will
+change, but still be user configurable on deprecation. This feature will be removed in version 2.10. Deprecation warnings can be disabled
+ by setting deprecation_warnings=False in ansible.cfg.
+ [WARNING]: Invalid characters were found in group names but not replaced, use -vvvv to see details
+
+
+PLAY [local-machine] *********************************************************************************************************************
+
+TASK [Gathering Facts] *******************************************************************************************************************
+ok: [127.0.0.1]
+
+TASK [Create file] ***********************************************************************************************************************
+changed: [127.0.0.1]
+
+PLAY RECAP *******************************************************************************************************************************
+127.0.0.1                  : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+[unixrox@ip-10-0-0-195 playbook]$
