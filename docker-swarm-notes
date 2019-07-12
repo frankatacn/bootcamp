@@ -1,0 +1,42 @@
+# https://docs.docker.com/engine/swarm/
+
+# use ec2 ubuntu
+
+# install docker
+sudo apt update -y
+sudo apt install -y docker.io
+
+sudo systemctl restart docker
+sudo systemctl enable docker
+
+#these are sample ip addresses
+export swm_mgr=13.57.178.212
+export swm_node1=13.57.178.215
+export swm_node2=13.56.155.59
+
+#enable ports on security group (firewall)
+# TCP 2377 = cluster management communications
+# TCP and UDP 7946 = communication among nodes
+# UDP 4789 = overlay network traffic
+
+docker swarm init --advertise-addr $swm_mgr
+
+docker info
+
+docker node ls
+
+docker swarm join-token worker   # to generate the token for workers to join the swarm
+
+# deploy a service
+docker service create --replicas 1 --name tomcat tomcat:7.0
+
+docker service ls
+
+docker service inspect --pretty tomcat
+
+# scale the service
+#docker service scale <SERVICE-ID>=<NUMBER-OF-TASKS>
+docker service scale tomcat=5
+
+# Delete the service running on the swarm
+docker service rm tomcat
