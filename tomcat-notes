@@ -1,0 +1,29 @@
+# Install Tomcat 7 on ubuntu
+
+# update/patch existing libraries
+sudo apt-get update -y
+
+# Install Tomcat 7
+sudo apt-get install -y tomcat7
+
+# If tomcat isn't started automatically after installation, run this:
+sudo systemctl start tomcat7
+
+# To make tomcat start after a host reboot/restart,
+sudo systemctl enable tomcat7
+
+# all WAR files are to be placed in /var/lib/tomcat7/webapps
+# in your browser address bar, type: IP_address:8080
+
+
+# run tomcat via docker, install docker first
+sudo apt-get install -y docker.io
+
+# If docker isn't started automatically after installation, run this:
+sudo systemctl start docker
+
+# To make docker start after a host reboot/restart,
+sudo systemctl enable docker
+
+# check if docker is running
+sudo docker ps (or sudo docker info)
