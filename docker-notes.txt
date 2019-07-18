@@ -1,0 +1,9 @@
+#In amazon linux
+
+#add user to the docker group so won't have to bother running 'sudo docker'
+sudo usermod -aG docker ec2-user
+
+#login inside your container
+# docker exec -it <container_name> bash
+docker exec -it tomct-demo bash
+
