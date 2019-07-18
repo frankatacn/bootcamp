@@ -7,7 +7,6 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 public class seleniumtest {
    public static void main(String[] args) {
 
-      System.setProperty("webdriver.chrome.driver","C:\\path\\to\\chromedriver.exe");
       RemoteWebDriver driver = new ChromeDriver();
       //Puts an Implicit wait, Will wait for 10 seconds before throwing exception
       driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
